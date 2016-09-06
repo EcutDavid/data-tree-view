@@ -13,25 +13,24 @@ var converter = function (key, value) {
         new_key = k;
         new_val = value[k];
 
-      if (Object.hasOwnProperty.call(map_keys, k)) {
-        new_key = map_keys[k];
+        if (Object.hasOwnProperty.call(map_keys, k)) {
+          new_key = map_keys[k];
 
-        if (k == "NodeClass") {
-          if (Object.hasOwnProperty.call(icon_type, new_val)) {
-            new_val = icon_type[new_val];
+          if (k == "NodeClass") {
+            if (Object.hasOwnProperty.call(icon_type, new_val)) {
+              new_val = icon_type[new_val];
+            }
+          } else if (k == "NodeID") {
+            new_val = JSON.stringify(new_val);
+          } else if (k == "BrowseName") {
+            new_val = new_val.Name;
           }
-        } else if (k == "NodeID") {
-          new_val = JSON.stringify(new_val);
-        } else if (k == "BrowseName") {
-          new_val = new_val.Name;
-        }
-      } else if (!ALLOW_MORE_PROPS) break;
-
-    replacement[new_key] = new_val;
-    }
+        } else if (!ALLOW_MORE_PROPS) break;
+        replacement[new_key] = new_val;
+      }
     }
     return replacement;
-    }
+  }
   return value;
 }
 var map_keys = {
@@ -99,16 +98,14 @@ for(key in table) {
   }
 }
 
-
-
 $(function() {
   $('#container').jstree(treeData);
   // TODO: refactor this part with React or Backbone for perfomance improvement.
   $("#container").on("changed.jstree", function (e, data) {
-    // instance.select_node for selecting node
     var listView = $('.list-view');
     var treeInstance = $("#container").jstree(true);
     listView.html('');
+
     var selectedNodeIdList = data.selected;
     selectedNodeIdList.forEach(function(d) {
       var el = $('<p>' + d + '</p>');
