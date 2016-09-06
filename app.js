@@ -77,6 +77,29 @@ var treeData = {
 // 	"plugins" : ["checkbox", "search"]
 // };
 
+// Test whether the id field in tree data is unique
+var treeDataCore = JSON.parse(val2);
+function traverse(obj, table) {
+	if(table[obj.id]) table[obj.id]++;
+	else table[obj.id] = 1;
+
+	if (obj.children) {
+		obj.children.forEach(function(d) {
+			traverse(d, table);
+		})
+	}
+}
+var table = {};
+traverse(treeDataCore, table);
+console.log(table);
+for(key in table) {
+	if(table.hasOwnProperty(key) && table[key] > 1) {
+		console.warn('The `id` isn\'t unique');
+		break;
+	}
+}
+
+
 
 $(function() {
 	$('#container').jstree(treeData);
