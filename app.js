@@ -103,10 +103,25 @@ for(key in table) {
 
 $(function() {
 	$('#container').jstree(treeData);
+  // TODO: refactor this part with React or Backbone for perfomance improvment.
+	$("#container").on("changed.jstree", function (e, data) {
+    // instance.select_node for selecting node
+    var listView = $('.list-view');
+    var treeInstance = $("#container").jstree(true);
+    listView.html('');
+    var selectedNodeIdList = data.selected;
+    selectedNodeIdList.forEach(function(d) {
+      var el = $('<p>' + d + '</p>');
+      el.click(function() {
+        treeInstance.deselect_node(d);
+        this.remove();
+      });
+      listView.append(el);
+    });
+	});
 });
 
-
 $("#s").submit(function(e) {
-  e.preventDefault();
-  $("#container").jstree().search($("#q").val());
+	e.preventDefault();
+	$("#container").jstree(true).search($("#q").val());
 });

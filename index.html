@@ -5,16 +5,20 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+	<link rel="stylesheet" href="./style.css" />
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 	<script src="./data.json.js"></script>
 </head>
 <body>
-	<form id="s">
-	  <input type="search" id="q" />
-	  <button type="submit">Search</button>
-	</form>
-	<div id="container"></div>
-	<script src="./app.js"></script>
+	<div class="tree-view">
+		<form id="s">
+		  <input type="search" id="q" />
+		  <button type="submit">Search</button>
+		</form>
+		<div id="container"></div>
+		<script src="./app.js"></script>
+	</div>
+	<div class="list-view"></div>
 </body>
 </html>

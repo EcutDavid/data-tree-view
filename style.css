@@ -1,0 +1,9 @@
+.tree-view, .list-view {
+  float: left;
+  min-width: 400px;
+  width: 50%;
+}
+
+.list-view p {
+  cursor: pointer;
+}
