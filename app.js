@@ -33,6 +33,7 @@ var converter = function (key, value) {
   }
   return value;
 }
+
 var map_keys = {
   "NodeID": "id",
   "BrowseName": "text",
@@ -90,11 +91,9 @@ function traverse(obj, table) {
 }
 var table = {};
 traverse(treeDataCore, table);
-console.log(table);
 for(key in table) {
   if(table.hasOwnProperty(key) && table[key] > 1) {
     console.warn('The `id` isn\'t unique');
-    break;
   }
 }
 
@@ -104,16 +103,17 @@ $(function() {
   $("#container").on("changed.jstree", function (e, data) {
     var listView = $('.list-view');
     var treeInstance = $("#container").jstree(true);
-    listView.html('');
-
     var selectedNodeIdList = data.selected;
     selectedNodeIdList.forEach(function(d) {
-      var el = $('<p>' + d + '</p>');
-      el.click(function() {
-        treeInstance.deselect_node(d);
-        this.remove();
-      });
-      listView.append(el);
+      // TODO: implement original function
+      var section = new SectionModel({ name: d });
+      var sectionView = new SectionView({ model: section });
+      // var el = $('<p>' + d + '</p>');
+      // el.click(function() {
+      //   treeInstance.deselect_node(d);
+      //   this.remove();
+      // });
+      listView.append(sectionView.render().el);
     });
   });
 });
@@ -121,4 +121,26 @@ $(function() {
 $("#s").submit(function(e) {
   e.preventDefault();
   $("#container").jstree(true).search($("#q").val());
+});
+
+var SectionView = Backbone.View.extend({
+  initialize: function() {
+    this.listenTo(this.model, 'destroy', this.destroy);
+    this.listenTo(this.model, 'change', this.remove);
+  },
+
+  destroy: function() {
+    this.remove();
+  },
+
+  render: function() {
+    var content = $('<p>' + this.model.get('name') + '</p>');
+    $(this.el).html(content);
+    return this;
+  }
+});
+
+var SectionModel = Backbone.Model.extend({ });
+var SectionCollection = Backbone.Collection.extend({
+  model: SectionModel
 });
