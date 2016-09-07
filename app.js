@@ -99,20 +99,28 @@ for(key in table) {
 
 $(function() {
   $('#container').jstree(treeData);
-  // TODO: refactor this part with React or Backbone for perfomance improvement.
+
+  var modelDictionary = { }
   $("#container").on("changed.jstree", function (e, data) {
     var listView = $('.list-view');
     var treeInstance = $("#container").jstree(true);
     var selectedNodeIdList = data.selected;
+    for (var key in modelDictionary) {
+      if (selectedNodeIdList.indexOf(key) === -1) {
+        modelDictionary[key].destroy();
+        delete modelDictionary[key];
+      }
+    }
+
     selectedNodeIdList.forEach(function(d) {
-      // TODO: implement original function
       var section = new SectionModel({ name: d });
+      modelDictionary[d] = section;
       var sectionView = new SectionView({ model: section });
-      // var el = $('<p>' + d + '</p>');
-      // el.click(function() {
-      //   treeInstance.deselect_node(d);
-      //   this.remove();
-      // });
+      section.on('destroy', function(model, color) {
+        delete modelDictionary[model.get('name')];
+        treeInstance.deselect_node(model.get('name'));
+      });
+
       listView.append(sectionView.render().el);
     });
   });
@@ -125,16 +133,17 @@ $("#s").submit(function(e) {
 
 var SectionView = Backbone.View.extend({
   initialize: function() {
-    this.listenTo(this.model, 'destroy', this.destroy);
-    this.listenTo(this.model, 'change', this.remove);
+    this.listenTo(this.model, 'destroy', this.remove);
+    this.listenTo(this.model, 'change', this.render);
   },
 
   destroy: function() {
-    this.remove();
+    this.model.destroy();
   },
 
   render: function() {
     var content = $('<p>' + this.model.get('name') + '</p>');
+    $(content).on('click', this.destroy.bind(this));
     $(this.el).html(content);
     return this;
   }
