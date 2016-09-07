@@ -114,14 +114,16 @@ $(function() {
 
     selectedNodeIdList.forEach(function(d) {
       var section = new SectionModel({ name: d });
-      modelDictionary[d] = section;
-      var sectionView = new SectionView({ model: section });
-      section.on('destroy', function(model, color) {
-        delete modelDictionary[model.get('name')];
-        treeInstance.deselect_node(model.get('name'));
-      });
+      if(!modelDictionary[d]) {
+        modelDictionary[d] = section;
+        var sectionView = new SectionView({ model: section });
+        section.on('destroy', function(model, color) {
+          delete modelDictionary[model.get('name')];
+          treeInstance.deselect_node(model.get('name'));
+        });
 
-      listView.append(sectionView.render().el);
+        listView.append(sectionView.render().el);
+      }
     });
   });
 });
