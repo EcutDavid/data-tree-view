@@ -1,3 +1,25 @@
+// Using this mock data for testing the features of jstree
+// var testData = {
+//   'core' : {
+//     'data' : [
+//     {
+//       "text" : "Root node",
+//       "state" : {"opened" : true },
+//       "children" : [
+//       {
+//         "text" : "Child node 1",
+//         "state" : { "selected" : true },
+//         "icon" : "glyphicon glyphicon-flash"
+//       },
+//       { "text" : "Child node 2", "state" : { "disabled" : true } }
+//       ]
+//     }
+//     ]
+//   },
+//   "plugins" : ["checkbox", "search"]
+// };
+
+
 var ALLOW_MORE_PROPS = true;
 
 var converter = function (key, value) {
@@ -56,27 +78,6 @@ var treeData = {
   "plugins" : ["checkbox", "search"]
 }
 
-// Using this mock data for testing the features of jstree
-// var testData = {
-//   'core' : {
-//     'data' : [
-//     {
-//       "text" : "Root node",
-//       "state" : {"opened" : true },
-//       "children" : [
-//       {
-//         "text" : "Child node 1",
-//         "state" : { "selected" : true },
-//         "icon" : "glyphicon glyphicon-flash"
-//       },
-//       { "text" : "Child node 2", "state" : { "disabled" : true } }
-//       ]
-//     }
-//     ]
-//   },
-//   "plugins" : ["checkbox", "search"]
-// };
-
 // Test whether the id field in tree data is unique
 var treeDataCore = JSON.parse(val2);
 function traverse(obj, table) {
@@ -99,30 +100,28 @@ for(key in table) {
 
 $(function() {
   $('#container').jstree(treeData);
+  var listView = $('.list-view');
 
   var modelDictionary = { }
   $("#container").on("changed.jstree", function (e, data) {
-    var listView = $('.list-view');
     var treeInstance = $("#container").jstree(true);
     var selectedNodeIdList = data.selected;
     for (var key in modelDictionary) {
       if (selectedNodeIdList.indexOf(key) === -1) {
-        modelDictionary[key].destroy();
+        modelDictionary[key].remove();
         delete modelDictionary[key];
       }
     }
 
     selectedNodeIdList.forEach(function(d) {
-      var section = new SectionModel({ name: d });
       if(!modelDictionary[d]) {
-        modelDictionary[d] = section;
-        var sectionView = new SectionView({ model: section });
-        section.on('destroy', function(model, color) {
-          delete modelDictionary[model.get('name')];
-          treeInstance.deselect_node(model.get('name'));
+        var section = $('<p>' + d+ '</p>');
+        $(section).on('click', function() {
+            treeInstance.deselect_node(d);
+            this.remove();
         });
-
-        listView.append(sectionView.render().el);
+        modelDictionary[d] = section;
+        listView.append(section);
       }
     });
   });
@@ -131,27 +130,4 @@ $(function() {
 $("#s").submit(function(e) {
   e.preventDefault();
   $("#container").jstree(true).search($("#q").val());
-});
-
-var SectionView = Backbone.View.extend({
-  initialize: function() {
-    this.listenTo(this.model, 'destroy', this.remove);
-    this.listenTo(this.model, 'change', this.render);
-  },
-
-  destroy: function() {
-    this.model.destroy();
-  },
-
-  render: function() {
-    var content = $('<p>' + this.model.get('name') + '</p>');
-    $(content).on('click', this.destroy.bind(this));
-    $(this.el).html(content);
-    return this;
-  }
-});
-
-var SectionModel = Backbone.Model.extend({ });
-var SectionCollection = Backbone.Collection.extend({
-  model: SectionModel
 });
