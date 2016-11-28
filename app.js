@@ -21,6 +21,22 @@
 
 
 var ALLOW_MORE_PROPS = true;
+var nodeClone = JSON.stringify(tree_data.SubNodes[0])
+
+var pattern = /\??count=/;
+var treeNodeCount = 100;
+var qsArr = location.search.split('&');
+for (var i = 0; i < qsArr.length; i++) {
+  if (pattern.test(qsArr[i])) {
+    treeNodeCount = Number(qsArr[i].replace(pattern, ''));
+    treeNodeCount = treeNodeCount > 1 ? treeNodeCount : 100;
+  }
+}
+for (i = 0; i < treeNodeCount; i++) {
+  var newNode = JSON.parse(nodeClone);
+  newNode.NodeID.Identifier = 'test' + i;
+  tree_data.SubNodes.push(newNode)
+}
 
 var converter = function (key, value) {
   if (_.isArray(value)) return value;
@@ -78,8 +94,10 @@ var treeData = {
   "plugins" : ["checkbox", "search"]
 }
 
+
 // Test whether the id field in tree data is unique
 var treeDataCore = JSON.parse(val2);
+let count = 0;
 function traverse(obj, table) {
   if(table[obj.id]) table[obj.id]++;
   else table[obj.id] = 1;
@@ -90,6 +108,7 @@ function traverse(obj, table) {
     })
   }
 }
+
 var table = {};
 traverse(treeDataCore, table);
 for(key in table) {
